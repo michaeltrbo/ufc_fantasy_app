@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFC Fantasy League Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Navbar -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-brand">
+                <h1>🥊 UFC Fantasy League</h1>
+            </div>
+            <div class="nav-auth" id="navAuth">
+                <button class="btn btn-secondary" id="loginBtn">Login</button>
+            </div>
+        </nav>
+
+        <header>
+            <p class="subtitle">Manage your fantasy league and track fighter stats</p>
+        </header>
+
+        <!-- Login Section (shown when logged out) -->
+        <section id="login-section" class="tab-content">
+            <div class="card">
+                <h2>Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Username *</label>
+                        <input type="text" id="loginUsername" name="loginUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password *</label>
+                        <input type="password" id="loginPassword" name="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+                <div id="loginResult" class="result"></div>
+                <p style="margin-top: 20px; text-align: center;">
+                    Don't have an account? <a href="#" id="showRegisterLink" style="color: var(--accent-primary);">Register here</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- Main Dashboard (shown when logged in) -->
+        <div id="dashboard" style="display: none;">
+            <nav class="tabs">
+                <button class="tab-btn active" data-tab="my-leagues">My Leagues</button>
+                <button class="tab-btn" data-tab="join-league">Join League</button>
+                <button class="tab-btn" data-tab="create-league">Create League</button>
+                <button class="tab-btn" data-tab="make-picks">Make Picks</button>
+                <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+                <button class="tab-btn" data-tab="fighter-history">Fighter History</button>
+            </nav>
+
+            <!-- My Leagues Section -->
+            <section id="my-leagues" class="tab-content active">
+                <div class="card">
+                    <h2>My Leagues</h2>
+                    <div id="myLeaguesList" class="leagues-grid"></div>
+                </div>
+            </section>
+
+            <!-- League Details Modal -->
+            <div id="leagueDetailsModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2 id="modalLeagueName">League Details</h2>
+                    <div id="modalLeagueCode" class="league-code-display"></div>
+                    <div id="modalLeagueMembers" class="table-container"></div>
+                </div>
+            </div>
+
+            <!-- View Picks Modal -->
+            <div id="viewPicksModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2 id="modalPicksTitle">User Picks</h2>
+                    <div id="modalPicksContent" class="table-container"></div>
+                </div>
+            </div>
+
+            <!-- Join League Section -->
+            <section id="join-league" class="tab-content">
+                <div class="card">
+                    <h2>Join a League</h2>
+                    <form id="joinLeagueForm">
+                        <div class="form-group">
+                            <label for="leagueCodeInput">League Code *</label>
+                            <input type="text" id="leagueCodeInput" name="leagueCode" required 
+                                   placeholder="Enter the league code">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Join League</button>
+                    </form>
+                    <div id="joinLeagueResult" class="result"></div>
+                </div>
+            </section>
+
+            <!-- Create League Section -->
+            <section id="create-league" class="tab-content">
+                <div class="card">
+                    <h2>Create New League</h2>
+                    <form id="createLeagueForm">
+                        <div class="form-group">
+                            <label for="leagueName">League Name *</label>
+                            <input type="text" id="leagueName" name="leagueName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="scoringRules">Scoring Rules</label>
+                            <textarea id="scoringRules" name="scoringRules" rows="3" 
+                                      placeholder="Optional scoring rules description"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="leagueCode">League Code</label>
+                            <input type="text" id="leagueCode" name="leagueCode" 
+                                   placeholder="Optional (auto-generated if empty)">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create League</button>
+                    </form>
+                    <div id="createLeagueResult" class="result"></div>
+                </div>
+            </section>
+
+            <!-- Make Picks Section -->
+            <section id="make-picks" class="tab-content">
+                <div class="card">
+                    <h2>Make Picks</h2>
+                    <form id="picksForm">
+                        <div class="form-group">
+                            <label for="picksLeagueSelect">Select League *</label>
+                            <select id="picksLeagueSelect" name="leagueId" required>
+                                <option value="">-- Select a League --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="picksEventSelect">Select Event *</label>
+                            <select id="picksEventSelect" name="eventId" required>
+                                <option value="">-- Select an Event --</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-secondary" id="loadFightsBtn">Load Fights</button>
+                    </form>
+                    <div id="picksResult" class="result"></div>
+                    <div id="fightsContainer" style="margin-top: 20px;"></div>
+                    <div id="savePicksContainer" style="display: none; margin-top: 20px;">
+                        <button type="button" class="btn btn-primary" id="savePicksBtn">Save Picks</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- League Leaderboard Section -->
+            <section id="leaderboard" class="tab-content">
+                <div class="card">
+                    <h2>League Leaderboard</h2>
+                    <form id="leaderboardForm">
+                        <div class="form-group">
+                            <label for="leaderboardLeagueSelect">Select League *</label>
+                            <select id="leaderboardLeagueSelect" name="leagueId" required>
+                                <option value="">-- Select a League --</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Get Leaderboard</button>
+                    </form>
+                    <div id="leaderboardResult" class="result"></div>
+                    <div id="leaderboardTable" class="table-container"></div>
+                </div>
+            </section>
+
+            <!-- Fighter History Section -->
+            <section id="fighter-history" class="tab-content">
+                <div class="card">
+                    <h2>Fighter History Lookup</h2>
+                    <form id="fighterHistoryForm">
+                        <div class="form-group">
+                            <label for="fighterName">Fighter Name *</label>
+                            <input type="text" id="fighterName" name="fighterName" required 
+                                   placeholder="Enter fighter name (partial match supported)">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Search Fighter History</button>
+                    </form>
+                    <div id="fighterHistoryResult" class="result"></div>
+                    <div id="fighterHistoryTable" class="table-container"></div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Register Section (hidden by default, shown via link) -->
+        <section id="register" class="tab-content" style="display: none;">
+            <div class="card">
+                <h2>Register New User</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="username">Username *</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password *</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Register User</button>
+                </form>
+                <div id="registerResult" class="result"></div>
+                <p style="margin-top: 20px; text-align: center;">
+                    Already have an account? <a href="#" id="showLoginLink" style="color: var(--accent-primary);">Login here</a>
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+
+    <div id="fightStatsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeStatsModal">&times;</span>
+            <h2 id="statsTitle">Fight Stats</h2>
+            <div id="statsContent" class="stats-container">
+                </div>
+        </div>
+    </div>
+</body>
+</html>
